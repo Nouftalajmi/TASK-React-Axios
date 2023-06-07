@@ -1,7 +1,32 @@
-import React from "react";
-import petsData from "../petsData";
+import React, { useState, useEffect } from "react";
+
+import { useParams } from "react-router-dom";
+import { getPet, putPet, deletePet } from "../api/pets";
+
 const PetDetail = () => {
-  const pet = petsData[0];
+  const { petId } = useParams();
+  const [pet, setPet] = useState({});
+
+  const callAPI = async () => {
+    const res = await getPet(petId);
+    setPet(res);
+  };
+
+  useEffect(() => {
+    callAPI();
+  }, []);
+
+  const handleAdobt = () => {
+    putPet(pet.id, pet.name, pet.type, pet.image);
+  };
+  const handleDelete = () => {
+    deletePet(pet.id);
+  };
+
+  if (!pet) {
+    return <h1>{`There is no pet with the id: ${petId}`}</h1>;
+  }
+
   return (
     <div className="bg-[#F9E3BE] w-screen h-[100vh] flex justify-center items-center">
       <div className="border border-black rounded-md w-[70%] h-[70%] overflow-hidden flex flex-col md:flex-row p-5">
@@ -17,11 +42,17 @@ const PetDetail = () => {
           <h1>Type: {pet.type}</h1>
           <h1>adopted: {pet.adopted}</h1>
 
-          <button className="w-[70px] border border-black rounded-md  hover:bg-green-400 mb-5">
+          <button
+            onClick={handleAdobt}
+            className="w-[70px] border border-black rounded-md  hover:bg-green-400 mb-5"
+          >
             Adobt
           </button>
 
-          <button className="w-[70px] border border-black rounded-md  hover:bg-red-400">
+          <button
+            onClick={handleDelete}
+            className="w-[70px] border border-black rounded-md  hover:bg-red-400"
+          >
             Delete
           </button>
         </div>
